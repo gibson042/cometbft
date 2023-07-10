@@ -5,10 +5,15 @@ import (
 	"net"
 	"strings"
 
+	v1 "github.com/cometbft/cometbft/proto/tendermint/services/block_results/v1"
+	"github.com/cometbft/cometbft/rpc/core"
+	"github.com/cometbft/cometbft/rpc/grpc/server/services/blockresultservice"
+
+	"google.golang.org/grpc"
+
 	"github.com/cometbft/cometbft/libs/log"
 	pbversionsvc "github.com/cometbft/cometbft/proto/tendermint/services/version/v1"
 	"github.com/cometbft/cometbft/rpc/grpc/server/services/versionservice"
-	"google.golang.org/grpc"
 )
 
 // Option is any function that allows for configuration of the gRPC server
@@ -16,10 +21,11 @@ import (
 type Option func(*serverBuilder)
 
 type serverBuilder struct {
-	listener       net.Listener
-	versionService pbversionsvc.VersionServiceServer
-	logger         log.Logger
-	grpcOpts       []grpc.ServerOption
+	listener            net.Listener
+	versionService      pbversionsvc.VersionServiceServer
+	blockresultsService v1.BlockResultsServiceServer
+	logger              log.Logger
+	grpcOpts            []grpc.ServerOption
 }
 
 func newServerBuilder(listener net.Listener) *serverBuilder {
@@ -50,6 +56,12 @@ func Listen(addr string) (net.Listener, error) {
 func WithVersionService() Option {
 	return func(b *serverBuilder) {
 		b.versionService = versionservice.New()
+	}
+}
+
+func WithBlockResultsService(env *core.Environment) Option {
+	return func(b *serverBuilder) {
+		b.blockresultsService = blockresultservice.New(env)
 	}
 }
 

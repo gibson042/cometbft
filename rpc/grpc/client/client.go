@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"net"
 
-	cmtnet "github.com/cometbft/cometbft/libs/net"
 	"github.com/cosmos/gogoproto/grpc"
 	ggrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	cmtnet "github.com/cometbft/cometbft/libs/net"
 )
 
 type Option func(*clientBuilder)
@@ -21,20 +22,23 @@ type Option func(*clientBuilder)
 // node via gRPC.
 type Client interface {
 	VersionServiceClient
+	BlockResultsServiceClient
 }
 
 type clientBuilder struct {
 	dialerFunc func(context.Context, string) (net.Conn, error)
 	grpcOpts   []ggrpc.DialOption
 
-	versionServiceEnabled bool
+	versionServiceEnabled      bool
+	blockResultsServiceEnabled bool
 }
 
 func newClientBuilder() *clientBuilder {
 	return &clientBuilder{
-		dialerFunc:            defaultDialerFunc,
-		grpcOpts:              make([]ggrpc.DialOption, 0),
-		versionServiceEnabled: true,
+		dialerFunc:                 defaultDialerFunc,
+		grpcOpts:                   make([]ggrpc.DialOption, 0),
+		versionServiceEnabled:      true,
+		blockResultsServiceEnabled: true,
 	}
 }
 
@@ -46,6 +50,7 @@ type client struct {
 	conn grpc.ClientConn
 
 	VersionServiceClient
+	BlockResultsServiceClient
 }
 
 // WithInsecure disables transport security for the underlying client
@@ -98,9 +103,14 @@ func New(ctx context.Context, addr string, opts ...Option) (Client, error) {
 	if builder.versionServiceEnabled {
 		versionServiceClient = newVersionServiceClient(conn)
 	}
+	blockResultServiceClient := newDisabledBlockResultsServiceClient()
+	if builder.blockResultsServiceEnabled {
+		blockResultServiceClient = newBlockResultsServiceClient(conn)
+	}
 	client := &client{
-		conn:                 conn,
-		VersionServiceClient: versionServiceClient,
+		conn:                      conn,
+		VersionServiceClient:      versionServiceClient,
+		BlockResultsServiceClient: blockResultServiceClient,
 	}
 	return client, nil
 }

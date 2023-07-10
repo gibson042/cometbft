@@ -520,12 +520,17 @@ type GRPCConfig struct {
 	// The gRPC version service provides version information about the node and
 	// the protocols it uses.
 	VersionService *GRPCVersionServiceConfig `mapstructure:"version_service"`
+
+	// The gRPC block results service provides the block results for a given height
+	// If no height is provided, the block results of the latest height are returned
+	BlockResultsService *GRPCBlockResultsServiceConfig `mapstructure:"block_results_service"`
 }
 
 func DefaultGRPCConfig() *GRPCConfig {
 	return &GRPCConfig{
-		ListenAddress:  "",
-		VersionService: DefaultGRPCVersionServiceConfig(),
+		ListenAddress:       "",
+		VersionService:      DefaultGRPCVersionServiceConfig(),
+		BlockResultsService: DefaultGRPCBlockResultsServiceConfig(),
 	}
 }
 
@@ -553,8 +558,18 @@ type GRPCVersionServiceConfig struct {
 	Enabled bool `mapstructure:"enabled"`
 }
 
+type GRPCBlockResultsServiceConfig struct {
+	Enabled bool `mapstructure:"enabled"`
+}
+
 func DefaultGRPCVersionServiceConfig() *GRPCVersionServiceConfig {
 	return &GRPCVersionServiceConfig{
+		Enabled: true,
+	}
+}
+
+func DefaultGRPCBlockResultsServiceConfig() *GRPCBlockResultsServiceConfig {
+	return &GRPCBlockResultsServiceConfig{
 		Enabled: true,
 	}
 }
