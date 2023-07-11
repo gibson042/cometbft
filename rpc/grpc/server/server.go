@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/cometbft/cometbft/libs/log"
+	pbblockresultssvc "github.com/cometbft/cometbft/proto/tendermint/services/block_results/v1"
 	pbversionsvc "github.com/cometbft/cometbft/proto/tendermint/services/version/v1"
 	"github.com/cometbft/cometbft/rpc/grpc/server/services/versionservice"
 )
@@ -95,6 +96,11 @@ func Serve(listener net.Listener, opts ...Option) error {
 	if b.versionService != nil {
 		pbversionsvc.RegisterVersionServiceServer(server, b.versionService)
 		b.logger.Debug("Registered version service")
+	}
+
+	if b.blockresultsService != nil {
+		pbblockresultssvc.RegisterBlockResultsServiceServer(server, b.blockresultsService)
+		b.logger.Debug("Registered block results service")
 	}
 	b.logger.Info("serve", "msg", fmt.Sprintf("Starting gRPC server on %s", listener.Addr()))
 	return server.Serve(b.listener)

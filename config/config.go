@@ -536,8 +536,9 @@ func DefaultGRPCConfig() *GRPCConfig {
 
 func TestGRPCConfig() *GRPCConfig {
 	return &GRPCConfig{
-		ListenAddress:  "tcp://127.0.0.1:36670",
-		VersionService: TestGRPCVersionServiceConfig(),
+		ListenAddress:       "tcp://127.0.0.1:36670",
+		VersionService:      TestGRPCVersionServiceConfig(),
+		BlockResultsService: DefaultGRPCBlockResultsServiceConfig(),
 	}
 }
 

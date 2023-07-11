@@ -2,10 +2,9 @@ package e2e_test
 
 import (
 	"context"
+	v1 "github.com/cometbft/cometbft/proto/tendermint/services/block_results/v1"
 	"testing"
 	"time"
-
-	v1 "github.com/cometbft/cometbft/proto/tendermint/services/block_results/v1"
 
 	"github.com/stretchr/testify/require"
 
