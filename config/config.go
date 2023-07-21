@@ -525,12 +525,15 @@ type GRPCConfig struct {
 	// The gRPC version service provides version information about the node and
 	// the protocols it uses.
 	VersionService *GRPCVersionServiceConfig `mapstructure:"version_service"`
+
+	Privileged *GRPCPrivilegedConfig `mapstructure:"privileged"`
 }
 
 func DefaultGRPCConfig() *GRPCConfig {
 	return &GRPCConfig{
 		ListenAddress:  "",
 		VersionService: DefaultGRPCVersionServiceConfig(),
+		Privileged:     DefaultGRPCPrivilegedConfig(),
 	}
 }
 
@@ -538,6 +541,7 @@ func TestGRPCConfig() *GRPCConfig {
 	return &GRPCConfig{
 		ListenAddress:  "tcp://127.0.0.1:36670",
 		VersionService: TestGRPCVersionServiceConfig(),
+		Privileged:     TestGRPCPrivilegedConfig(),
 	}
 }
 
@@ -566,6 +570,52 @@ func DefaultGRPCVersionServiceConfig() *GRPCVersionServiceConfig {
 
 func TestGRPCVersionServiceConfig() *GRPCVersionServiceConfig {
 	return &GRPCVersionServiceConfig{
+		Enabled: true,
+	}
+}
+
+//-----------------------------------------------------------------------------
+// GRPCPrivilegedConfig
+
+// GRPCPrivilegedConfig defines the configuration for the CometBFT gRPC server
+// exposing privileged endpoints.
+
+type GRPCPrivilegedConfig struct {
+	// TCP or Unix socket address for the gRPC server for privileged clients
+	// to listen on. If empty, the gRPC server will be disabled.
+	ListenAddress string `mapstructure:"laddr"`
+
+	// The gRPC pruning service provides control over the depth of block
+	// storage information that the node
+	PruningService *GRPCPruningServiceConfig `mapstructure:"pruning_service"`
+}
+
+func DefaultGRPCPrivilegedConfig() *GRPCPrivilegedConfig {
+	return &GRPCPrivilegedConfig{
+		ListenAddress:  "",
+		PruningService: DefaultGRPCPruningServiceConfig(),
+	}
+}
+
+func TestGRPCPrivilegedConfig() *GRPCPrivilegedConfig {
+	return &GRPCPrivilegedConfig{
+		ListenAddress:  "tcp://127.0.0.1:36671",
+		PruningService: TestGRPCPruningServiceConfig(),
+	}
+}
+
+type GRPCPruningServiceConfig struct {
+	Enabled bool `mapstructure:"enabled"`
+}
+
+func DefaultGRPCPruningServiceConfig() *GRPCPruningServiceConfig {
+	return &GRPCPruningServiceConfig{
+		Enabled: true,
+	}
+}
+
+func TestGRPCPruningServiceConfig() *GRPCPruningServiceConfig {
+	return &GRPCPruningServiceConfig{
 		Enabled: true,
 	}
 }
