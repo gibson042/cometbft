@@ -33,29 +33,63 @@ func TestGRPC_Version(t *testing.T) {
 	})
 }
 
-func TestGRPC_BlockResults(t *testing.T) {
+func TestGRPC_GetBlockResults(t *testing.T) {
 	testNode(t, func(t *testing.T, node e2e.Node) {
-		// TODO: What is this?
 		if node.Mode != e2e.ModeFull && node.Mode != e2e.ModeValidator {
 			return
 		}
 
-		nodeClient, err := node.Client()
+		blocks := fetchBlockChain(t)
+
+		client, err := node.Client()
 		require.NoError(t, err)
+		status, err := client.Status(ctx)
+		require.NoError(t, err)
+
+		first := status.SyncInfo.EarliestBlockHeight
+		last := status.SyncInfo.LatestBlockHeight
+		if node.RetainBlocks > 0 {
+			first++
+		}
 
 		ctx, ctxCancel := context.WithTimeout(context.Background(), time.Minute)
 		defer ctxCancel()
-
-		client, err := node.GRPCClient(ctx)
+		gRPCClient, err := node.GRPCClient(ctx)
 		require.NoError(t, err)
 
-		res, err := nodeClient.BlockResults(ctx, nil)
-		require.NoError(t, err)
-		t.Logf("Res: %v", res)
+		for _, block := range blocks {
+			successCases := []struct {
+				expectedHeight int64
+				request        v1.GetBlockResultsRequest
+			}{
+				{first, v1.GetBlockResultsRequest{Height: first}},
+				{last, v1.GetBlockResultsRequest{}},
+			}
+			errorCases := []struct {
+				request v1.GetBlockResultsRequest
+			}{
+				{v1.GetBlockResultsRequest{-1}},
+				{v1.GetBlockResultsRequest{10000}},
+			}
 
-		grpcRes, err := client.GetBlockResults(ctx, v1.GetBlockResultsRequest{})
-		require.NoError(t, err)
+			if block.Header.Height < first {
+				continue
+			}
+			if block.Header.Height > last {
+				break
+			}
 
-		require.Equal(t, res.Height, grpcRes.Height)
+			for _, tc := range successCases {
+				res, err := gRPCClient.GetBlockResults(ctx, tc.request)
+				// First block tests
+				require.NoError(t, err)
+				require.NotNil(t, res)
+				require.Equal(t, res.Height, tc.expectedHeight)
+			}
+			for _, tc := range errorCases {
+				_, err = gRPCClient.GetBlockResults(ctx, tc.request)
+				require.Error(t, err)
+			}
+		}
 	})
 }
