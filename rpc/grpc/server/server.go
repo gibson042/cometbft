@@ -2,10 +2,11 @@ package server
 
 import (
 	"fmt"
-	sm "github.com/cometbft/cometbft/state"
-	"github.com/cometbft/cometbft/store"
 	"net"
 	"strings"
+
+	sm "github.com/cometbft/cometbft/state"
+	"github.com/cometbft/cometbft/store"
 
 	v1 "github.com/cometbft/cometbft/proto/tendermint/services/block_results/v1"
 	"github.com/cometbft/cometbft/rpc/grpc/server/services/blockresultservice"
@@ -13,7 +14,6 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/cometbft/cometbft/libs/log"
-	pbblockresultssvc "github.com/cometbft/cometbft/proto/tendermint/services/block_results/v1"
 	pbversionsvc "github.com/cometbft/cometbft/proto/tendermint/services/version/v1"
 	"github.com/cometbft/cometbft/rpc/grpc/server/services/versionservice"
 )
@@ -100,7 +100,7 @@ func Serve(listener net.Listener, opts ...Option) error {
 	}
 
 	if b.blockresultsService != nil {
-		pbblockresultssvc.RegisterBlockResultsServiceServer(server, b.blockresultsService)
+		v1.RegisterBlockResultsServiceServer(server, b.blockresultsService)
 		b.logger.Debug("Registered block results service")
 	}
 	b.logger.Info("serve", "msg", fmt.Sprintf("Starting gRPC server on %s", listener.Addr()))

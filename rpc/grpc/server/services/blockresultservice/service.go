@@ -2,10 +2,12 @@ package blockresultservice
 
 import (
 	"context"
-	sm "github.com/cometbft/cometbft/state"
-	"github.com/cometbft/cometbft/store"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	sm "github.com/cometbft/cometbft/state"
+	"github.com/cometbft/cometbft/store"
 
 	v1 "github.com/cometbft/cometbft/proto/tendermint/services/block_results/v1"
 )

@@ -2,9 +2,10 @@ package e2e_test
 
 import (
 	"context"
-	v1 "github.com/cometbft/cometbft/proto/tendermint/services/block_results/v1"
 	"testing"
 	"time"
+
+	v1 "github.com/cometbft/cometbft/proto/tendermint/services/block_results/v1"
 
 	"github.com/stretchr/testify/require"
 
@@ -68,8 +69,8 @@ func TestGRPC_GetBlockResults(t *testing.T) {
 			errorCases := []struct {
 				request v1.GetBlockResultsRequest
 			}{
-				{v1.GetBlockResultsRequest{-1}},
-				{v1.GetBlockResultsRequest{10000}},
+				{v1.GetBlockResultsRequest{Height: -1}},
+				{v1.GetBlockResultsRequest{Height: 10000}},
 			}
 
 			if block.Header.Height < first {
