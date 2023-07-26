@@ -46,8 +46,3 @@ func (s *blockResultsService) GetBlockResults(_ context.Context, req *v1.GetBloc
 		AppHash:             res.AppHash,
 	}, nil
 }
-
-//func (s *blockResultsService) getHeight(height int64) (int64, error){
-//	latestHeight := s.blockStore.Height()
-//
-//}
