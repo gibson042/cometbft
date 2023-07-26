@@ -276,6 +276,11 @@ laddr = "{{ .GRPC.ListenAddress }}"
 [grpc.version_service]
 enabled = {{ .GRPC.VersionService.Enabled }}
 
+# The gRPC block results service returns block results for a given height. If no height
+# is given, it will return the latest height.
+[grpc.block_results_service]
+enabled = {{ .GRPC.BlockResultsService.Enabled }}
+
 #######################################################
 ###           P2P Configuration Options             ###
 #######################################################

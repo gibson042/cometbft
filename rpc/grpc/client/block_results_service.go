@@ -18,7 +18,6 @@ type blockResultServiceClient struct {
 	client v1.BlockResultsServiceClient
 }
 
-// TODO: Reimplement the type ResultBlockResults
 func (b blockResultServiceClient) GetBlockResults(ctx context.Context, req v1.GetBlockResultsRequest) (*ctypes.ResultBlockResults, error) {
 	res, err := b.client.GetBlockResults(ctx, &v1.GetBlockResultsRequest{Height: req.Height})
 	if err != nil {
